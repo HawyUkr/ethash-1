@@ -1,3 +1,8 @@
 /build
 /cmake-build-*
 /.idea
+
+/dist
+/.eggs
+*.egg-info
+*.pyc
