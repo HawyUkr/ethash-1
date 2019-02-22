@@ -4,5 +4,6 @@
 
 /dist
 /.eggs
-*.egg-info
-*.pyc
+/bindings/python/**/*.egg-info
+/bindings/python/**/*.pyc
+/bindings/python/**/*.so
