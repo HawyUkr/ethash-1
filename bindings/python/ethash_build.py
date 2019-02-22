@@ -17,17 +17,17 @@ ffibuilder.set_source(
 )
 
 ffibuilder.cdef("""
-    
+
 union ethash_hash256
 {
     ...;
-    uint8_t bytes[32];
+    char str[32];
 };
 
 union ethash_hash512
 {
     ...;
-    uint8_t bytes[64];
+    char str[64];
 };
 
 union ethash_hash256 ethash_keccak256(const uint8_t* data, size_t size);
