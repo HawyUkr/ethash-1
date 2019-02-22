@@ -275,6 +275,72 @@ jobs:
           command: |  # Software emulation in qemu will not handle threads.
             qemu-ppc64 test/ethash-test --gtest_filter='-*_multithreaded.*'
 
+  linux-release:
+    environment:
+      - CXX: clang++-8
+      - CC:  clang-8
+      - BUILD_PARALLEL_JOBS: 4
+      - CMAKE_OPTIONS: -DETHASH_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+    docker:
+      - image: ethereum/cpp-build-env:9
+    steps:
+      - checkout
+      - *configure
+      - *build
+      - persist_to_workspace:
+          root: /tmp/local
+          paths:
+            - "*"
+
+  python-build-packages:
+    docker:
+      - image: quay.io/pypa/manylinux1_x86_64
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project/dist
+      - run:
+          name: "Build source dist"
+          command: |
+            export PATH=/opt/python/cp37-cp37m/bin:$PATH
+            ./setup.py sdist
+      - run:
+          name: "Build wheels"
+          command: |
+            for tag in cp35-cp35m cp36-cp36m
+            do
+              export PATH=/opt/python/$tag/bin:$PATH
+              python --version
+              ./setup.py bdist_wheel
+            done
+      - run:
+          name: "Tag wheels"
+          working_directory: ~/project/dist
+          command: |
+            find -name '*linux_x86_64.whl' -exec auditwheel repair {} \;
+
+  python-linux:
+    environment:
+      - CXX: clang++-8
+      - CC:  clang-8
+      - BUILD_PARALLEL_JOBS: 4
+      - CMAKE_OPTIONS: -DETHASH_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=~/project/dist
+    docker:
+      - image: ethereum/cpp-build-env:9
+    steps:
+      - run:
+          name: "System deps"
+          command: |
+            sudo pip3 install wheel
+            sudo apt -q update && sudo apt install -qy python3-dev
+      - checkout
+      - *configure
+      - *build
+      - run:
+          name: "Build Python"
+          command: |
+            ./setup.py sdist bdist_wheel
+
 
   macos-xcode-tsan:
     <<: *macos-defaults
@@ -295,14 +361,19 @@ workflows:
   version: 2
   ethash:
     jobs:
-      - linux-gcc6-coverage
-      - linux-clang6-ubsan
-      - linux-clang6-asan
-      - linux-gcc4.8
-      - linux-clang3.8
-      - linux-32bit-asan
-      - linux-32bit-ubsan
-      - mips64
-      - powerpc64
-      - macos-xcode-tsan
-      - macos-xcode83
+#      - linux-gcc6-coverage
+#      - linux-clang6-ubsan
+#      - linux-clang6-asan
+#      - linux-gcc4.8
+#      - linux-clang3.8
+#      - linux-32bit-asan
+#      - linux-32bit-ubsan
+#      - mips64
+#      - powerpc64
+#      - macos-xcode-tsan
+#      - macos-xcode83
+      - python-linux
+      - linux-release
+      - python-build-packages:
+          requires:
+            - linux-release
