@@ -19,4 +19,6 @@ setup(
 
     setup_requires=['cffi>=1.12'],
     install_requires=['cffi>=1.12'],
+
+    test_suite='tests.test_ethash',
 )
