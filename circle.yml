@@ -323,6 +323,9 @@ jobs:
           working_directory: ~/project/dist
           command: |
             find -name '*linux_x86_64.whl' -exec auditwheel repair {} \;
+      - store_artifacts:
+          path: ~/project/dist
+          destination: dist
 
   macos-xcode-tsan:
     <<: *macos-defaults
@@ -337,6 +340,33 @@ jobs:
     <<: *macos-defaults
     macos:
       xcode: "8.3.3"
+
+  python-macos:
+    environment:
+      - BUILD_PARALLEL_JOBS: 4
+      - CMAKE_OPTIONS: -DETHASH_BUILD_TESTS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=~/project/dist
+    macos:
+      xcode: "10.2.0"
+    steps:
+      - run:
+          name: "Install CMake"
+          command: |
+            pip3 install cmake
+      - checkout
+      - *configure
+      - *build
+      - run:
+          name: "Test"
+          command: |
+            ./setup.py test
+      - run:
+          name: "Build wheels"
+          command: |
+            python --version
+            ./setup.py bdist_wheel
+      - store_artifacts:
+          path: ~/project/dist
+          destination: dist
 
 
 workflows:
@@ -358,3 +388,4 @@ workflows:
       - python:
           requires:
             - linux-release
+      - python-macos
