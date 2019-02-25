@@ -21,7 +21,7 @@ class build_ext(setuptools_build_ext):
         ]
         build_dir = self.build_temp
         source_dir = path.dirname(path.abspath(__file__))
-        
+
         r = subprocess.call(['cmake', source_dir] + cmake_opts,
                             cwd=build_dir)
         if r != 0:
@@ -34,6 +34,7 @@ class build_ext(setuptools_build_ext):
                 "cmake build failed with exit status {}".format(r))
 
         self.library_dirs.append(path.join(build_dir, 'lib'))
+        self.library_dirs.append(path.join(build_dir, 'lib', 'Release'))
 
         super(build_ext, self).run()
 
