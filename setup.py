@@ -50,7 +50,7 @@ setup(
     cffi_modules=['bindings/python/ethash/_build.py:ffibuilder'],
 
     setup_requires=['cffi>=1.12', 'cmake>=3.13'],
-    install_requires=['cffi>=1.12'],
+    install_requires=['cffi>=1.12', 'cmake>=3.13'],
 
     test_suite='tests.test_ethash',
 
