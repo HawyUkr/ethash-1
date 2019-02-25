@@ -15,7 +15,7 @@ setup(
 
     package_dir={'': 'bindings/python'},
     packages=['ethash'],
-    cffi_modules=['bindings/python/ethash_build.py:ffibuilder'],
+    cffi_modules=['bindings/python/ethash/_build.py:ffibuilder'],
 
     setup_requires=['cffi>=1.12'],
     install_requires=['cffi>=1.12'],
