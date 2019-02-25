@@ -12,26 +12,29 @@ environment:
   matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       GENERATOR: "Visual Studio 15 2017 Win64"
-      CONFIGURATION: Debug
+#      CONFIGURATION: Debug
 
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      GENERATOR: "Visual Studio 15 2017"
-
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      GENERATOR: "Visual Studio 14 2015 Win64"
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+#      GENERATOR: "Visual Studio 15 2017"
+#
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#      GENERATOR: "Visual Studio 14 2015 Win64"
 
 install:
   # Python 3
-  - set PATH=C:\Python36-x64;C:\Python36-x64\Scripts;%PATH%
-  - pip install requests
+  - set PATH=C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%
+  - pip install requests wheel
 
 before_build: |
-  if not exist build mkdir build
-  cd build
-  cmake -G "%GENERATOR%" .. -DHUNTER_CONFIGURATION_TYPES=%CONFIGURATION%
+  cmake -S . -B build -G "%GENERATOR%" .. -DCMAKE_CONFIGURATION_TYPES=%CONFIGURATION% -DETHASH_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=dist
 
 build_script: |
-  cmake --build . --config %CONFIGURATION%
+  cmake --build build --config %CONFIGURATION% --target install
+  python setup.py bdist_wheel
 
 test_script: |
-  if %CONFIGURATION%==Release C:\projects\ethash\build\test\%CONFIGURATION%\ethash-test.exe
+  python setup.py test
+
+artifacts:
+  - path: dist
+    name: dist
