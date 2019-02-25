@@ -26,10 +26,9 @@ install:
   - pip install requests wheel
 
 before_build: |
-  cmake -S . -B build -G "%GENERATOR%" .. -DCMAKE_CONFIGURATION_TYPES=%CONFIGURATION% -DETHASH_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=dist
+  echo "Nothing"
 
 build_script: |
-  cmake --build build --config %CONFIGURATION% --target install
   python setup.py bdist_wheel
 
 test_script: |
