@@ -2,6 +2,14 @@
 # Copyright 2019 Pawel Bylica.
 # Licensed under the Apache License, Version 2.0.
 
+# The CFFI build script for ethash library.
+# It expects the library is installed in the dist/ directory.
+# The installation can be performed by
+#
+#     cmake . -DCMAKE_INSTALL_PREFIX=dist
+#     make
+#     make install
+
 from cffi import FFI
 
 ffibuilder = FFI()
