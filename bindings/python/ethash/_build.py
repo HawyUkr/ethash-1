@@ -21,7 +21,6 @@ ffibuilder.set_source(
      """,
     include_dirs=['include'],
     libraries=['ethash'],
-    library_dirs=['dist/lib']
 )
 
 ffibuilder.cdef("""
